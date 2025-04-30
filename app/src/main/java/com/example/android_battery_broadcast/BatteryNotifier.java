@@ -3,6 +3,7 @@ package com.example.android_battery_broadcast;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -14,12 +15,10 @@ public class BatteryNotifier extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         Log.d(TAG, "BatteryNotifier received broadcast");
 
-        // Get battery status from result extras
-        String batteryStatus = intent.getStringExtra("batteryStatus");
+        Bundle resultExtras = getResultExtras(true);
+        String batteryStatus = resultExtras.getString("batteryStatus", "Unknown");
 
-        // Display battery status in a Toast
         Toast.makeText(context, "Battery Status: " + batteryStatus, Toast.LENGTH_SHORT).show();
-        // Log battery status
         Log.d(TAG, "Battery Status: " + batteryStatus);
     }
 }

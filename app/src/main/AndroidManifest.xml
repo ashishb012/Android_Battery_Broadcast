@@ -27,9 +27,9 @@
         <receiver
             android:name=".BatteryDataTransformer"
             android:exported="true"
-            android:permission="android.permission.RECEIVE_BATTERY_CHANGED">
+            android:permission="com.example.android_battery_broadcast.PERMISSION"> <!-- Use custom permission -->
             <intent-filter android:priority="100">
-                <action android:name="com.example.android_battery_broadcast.PERMISSION" />
+                <action android:name="com.example.android_battery_broadcast.BATTERY_UPDATE" /> <!-- Listen for BATTERY_UPDATE action -->
             </intent-filter>
         </receiver>
 
@@ -37,9 +37,9 @@
         <receiver
             android:name=".BatteryNotifier"
             android:exported="true"
-            android:permission="com.example.android_battery_broadcast.PERMISSION">
+            android:permission="com.example.android_battery_broadcast.PERMISSION"> <!-- Use custom permission -->
             <intent-filter android:priority="50">
-                <action android:name="com.example.android_battery_broadcast.BATTERY_UPDATE" />
+                <action android:name="com.example.android_battery_broadcast.BATTERY_UPDATE" /> <!-- Listen for BATTERY_UPDATE action -->
             </intent-filter>
         </receiver>
     </application>

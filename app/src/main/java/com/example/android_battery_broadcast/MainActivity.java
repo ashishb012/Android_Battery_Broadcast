@@ -1,6 +1,9 @@
 package com.example.android_battery_broadcast;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -16,10 +19,25 @@ public class MainActivity extends AppCompatActivity {
     public static final String BATTERY_LEVEL = "batteryLevel";
     public static final String IS_CHARGING = "isCharging";
 
+    BatteryDataTransformer transformer;
+    BatteryNotifier notifier;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        transformer = new BatteryDataTransformer();
+        notifier = new BatteryNotifier();
+
+        // Register both receivers dynamically
+        IntentFilter transformerFilter = new IntentFilter(BATTERY_UPDATE_ACTION);
+        transformerFilter.setPriority(100);  // Higher priority
+        registerReceiver(transformer, transformerFilter, Context.RECEIVER_EXPORTED);
+
+        IntentFilter notifierFilter = new IntentFilter(BATTERY_UPDATE_ACTION);
+        notifierFilter.setPriority(50);  // Lower priority
+        registerReceiver(notifier, notifierFilter, Context.RECEIVER_EXPORTED);
 
         Button sendBatteryUpdateButton = findViewById(R.id.sendBatteryUpdateButton);
         sendBatteryUpdateButton.setOnClickListener(new View.OnClickListener() {
@@ -31,9 +49,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void sendBatteryUpdate() {
-        // Simulate battery data
-        int batteryLevel = (int) (Math.random() * 100); // 0-100
-        boolean isCharging = Math.random() < 0.5; // 50% chance of true/false
+        int batteryLevel = (int) (Math.random() * 100);
+        boolean isCharging = Math.random() < 0.5;
 
         Log.d(TAG, "Sending Battery Update - Level: " + batteryLevel + ", Charging: " + isCharging);
         Toast.makeText(this, "Sending Battery Update - Level: " + batteryLevel + ", Charging: " + isCharging, Toast.LENGTH_SHORT).show();
@@ -42,7 +59,13 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra(BATTERY_LEVEL, batteryLevel);
         intent.putExtra(IS_CHARGING, isCharging);
 
-        // Send ordered broadcast
-        sendOrderedBroadcast(intent, "com.example.android_battery_broadcast.PERMISSION");
+        sendOrderedBroadcast(intent, null);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        unregisterReceiver(transformer);
+        unregisterReceiver(notifier);
     }
 }
